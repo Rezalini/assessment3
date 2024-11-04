@@ -1,54 +1,58 @@
-import unittest
-import os
+import docx
 from docx import Document
-from assessment3_part2 import createtext, printtext
-from io import StringIO
-from unittest.mock import patch
 
-class Testfunctions(unittest.TestCase):
+# Function to create a Word document with specific content
+def createtext(filename="rezawordfile.docx"):
+    # Initialize a new Word document
+    doc = docx.Document()
 
-    def setUp(self):
-        # Define the filename for the test document
-        self.filename = "test_rezawordfile.docx"
-    
-    def tearDown(self):
-        # Clean up by removing the test document after each test
-        if os.path.exists(self.filename):
-            os.remove(self.filename)
+    # Add a main heading to the document
+    doc.add_heading("Boutique Software Developer Company", 0)
 
-    def test_createtext(self):
-        # Create the document and verify it was created
-        createtext(self.filename)
-        self.assertTrue(os.path.exists(self.filename))
+    # Add a paragraph with introductory text
+    doc.add_paragraph("This is the first page of this word document")
 
-        # Open the document and verify its contents
-        doc = Document(self.filename)
-        self.assertEqual(doc.paragraphs[0].text, "Boutique Software Developer Company")
-        self.assertEqual(doc.paragraphs[1].text, "This is the first page of this word document")
-        self.assertEqual(doc.paragraphs[2].text, "Introduction")
-        self.assertEqual(doc.paragraphs[3].text, "Now we are hiring many people for the help desk job.")
-        self.assertEqual(doc.paragraphs[4].text, "Company time table")
+    # Add a subheading for the introduction section
+    doc.add_heading("Introduction", 1)
 
-    @patch('sys.stdout', new_callable=StringIO)
-    def test_printtext(self, mock_stdout):
-        # Create the document for testing printtext
-        createtext(self.filename)
+    # Add a paragraph under the Introduction heading
+    doc.add_paragraph("Now we are hiring many people for the help desk job.")
 
-        # Call printtext and capture its output
-        printtext(self.filename)
-        output = mock_stdout.getvalue()
+    # Add another subheading for the company timetable
+    doc.add_heading("Company time table", 2)
 
-        # Check that each expected paragraph is in the printed output
-        expected_texts = [
-            "Boutique Software Developer Company",
-            "This is the first page of this word document",
-            "Introduction",
-            "Now we are hiring many people for the help desk job.",
-            "Company time table"
-        ]
-        
-        for expected_text in expected_texts:
-            self.assertIn(expected_text, output)
+    # Insert an image into the document (image file should exist at specified path)
+    doc.add_picture("timetable.jpg")
 
+    # Save the document to the specified filename
+    doc.save(filename)
+
+    # Return the filename for reference in other functions
+    return filename
+
+
+# Function to print the text content of a specified Word document
+def printtext(filename="rezawordfile.docx"):
+    # Load the Word document for reading
+    doc = Document(filename)
+
+    # Print a header indicating the start of text output
+    print("\nlist of texts: ")
+
+    # Loop through each paragraph in the document and print its text
+    for i in doc.paragraphs:
+        print(i.text)
+
+
+# Main function to create and print the document's contents
+def main():
+    # Create the document and get its filename
+    filename = createtext()
+
+    # Print the contents of the created document
+    printtext(filename)
+
+
+# Entry point: run the main function if this script is executed directly
 if __name__ == "__main__":
-    unittest.main()
+    main()
