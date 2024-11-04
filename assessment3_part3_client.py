@@ -1,20 +1,34 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Oct 21 12:42:51 2024
+Created on Mon Oct 21 12:38:49 2024
 
-@author: rezaf
+@author: reza farzam 20137189
 """
 
+# Import the socket library
 import socket
 
-c = socket.socket()
+#create varuble for socket
+s = socket.socket()
 
-c.connect(("localhost",1234))
+print("Socket created")
 
-username = input("Enter your name: ")
-c.send(bytes(username,"utf-8"))
+#specify the server name and port
+s.bind(("localhost",1234))
 
+# open the ports for connection
+s.listen(3)
+print("Waiting for connections")
 
-print(c.recv(1024).decode())
+#accept the clients request
+c, addr, = s.accept()
+c.send(bytes("WLC to reza server","utf-8"))      
 
-c.close()
+#recieve the client massege
+name = c.recv(1024).decode()
+print("connected with ",addr,name) 
+
+#terminate the program    
+c.close() 
+s.close()
+    
